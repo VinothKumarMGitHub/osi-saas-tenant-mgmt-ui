@@ -2,6 +2,7 @@ version: 0.2
 env:
   variables:
     APP_NAME: "osi-saas-tenant-mgmt-ui"
+    S3_BUCKET: "osi-saas-tenant-mgmt-ui"
 phases:
   install:
     runtime-versions:
@@ -15,7 +16,10 @@ phases:
       - ng build --configuration=production
   post_build:
     commands:
-      - echo build process finished, we should upload to S3 now
-      - cd dist/osi-saas-tenant-mgmt-ui
-      - ls -la
-      - aws s3 sync . s3://osi-saas-tenant-mgmt-ui --delete
+      - aws s3 cp dist s3://${S3_BUCKET} --recursive
+      - echo Build completed on `date`
+artifacts:
+  files:
+      - '**/*'
+  base-directory: 'dist*'
+  discard-paths: yes
